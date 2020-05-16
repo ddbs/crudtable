@@ -83,7 +83,7 @@ sqlDao <- function(con, table, typecast = list()) {
         },
 
         getData = function() {
-            res <- DBI::dbSendQuery(con, dataQuery)
+            res <- DBI::dbSendQuery(con, dataQuery, row.names=F)
             d <- DBI::dbFetch(res)
             DBI::dbClearResult(res)
             castme(d, 'fromInternal')
@@ -91,7 +91,7 @@ sqlDao <- function(con, table, typecast = list()) {
 
         getRecord = function(id) {
             assert_that(is.scalar(id) && is.numeric(id))
-            res <- DBI::dbSendQuery(con, recordQuery, params = list(id))
+            res <- DBI::dbSendQuery(con, recordQuery, params = list(id), row.names=F)
             d <- DBI::dbFetch(res)
             DBI::dbClearResult(res)
             if (nrow(d) <= 0) {
@@ -105,7 +105,7 @@ sqlDao <- function(con, table, typecast = list()) {
             assert_that(length(setdiff(attributes, names(record))) == 0)
             record <- castme(record, 'toInternal')
             v <- unname(record[attributes])
-            DBI::dbExecute(con, insertQuery, params = v)
+            DBI::dbExecute(con, insertQuery, params = v, row.names=F)
         },
 
         update = function(id, record) {
@@ -114,12 +114,12 @@ sqlDao <- function(con, table, typecast = list()) {
             assert_that(length(setdiff(attributes, names(record))) == 0)
             record <- castme(record, 'toInternal')
             v <- unname(record[attributes])
-            DBI::dbExecute(con, updateQuery, params = c(v, id))
+            DBI::dbExecute(con, updateQuery, params = c(v, id), row.names=F)
         },
 
         delete = function(id) {
             assert_that(is.scalar(id) && is.numeric(id))
-            DBI::dbExecute(con, deleteQuery, params = list(id))
+            DBI::dbExecute(con, deleteQuery, params = list(id), row.names=F)
         }
     ), class = 'dao')
 }
